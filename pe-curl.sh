@@ -106,6 +106,13 @@ do
     # Grab the pdf and save it to the current directory
     fichier_pdf=`curl -k -L --progress-bar -o "$pdf_directory/$num_pdf.pdf" "https://courriers.pole-emploi.fr/courriersweb/affichagepdf:pdf/$num_pdf" --cookie cookies.txt`
 
+    # on macOS we can set a color label
+    if hash osascript 2>/dev/null;
+    then
+      # Set the file's label to blue so we can see it's unread
+      osascript -e 'property labelColor : {none:0, orange:1, red:2, yellow:3, blue:4, purple:5, green:6, gray:7}' -e "set myPF to POSIX path of \"$pdf_directory/$num_pdf.pdf\"" -e 'tell application "Finder"' -e 'set label index of (POSIX file myPF as alias) to blue of labelColor' -e 'end tell' > /dev/null
+    fi
+
     # finally set the flag so we know at least one pdf was found.
     let 'nouveaux_courriers_telecharges++'
   fi
