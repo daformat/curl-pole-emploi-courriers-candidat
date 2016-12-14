@@ -55,3 +55,4 @@ Un exemple concret d'utilisation du script avec passage de tous les paramètres 
 ### Remarques
 - Le script ne vérifie (pour l'instant en tout cas) pas si le login s'est bien passé, donc vérifiez bien que vos informations de connexion sont correctes, sans quoi le script vous dirra sempiternellement "Aucun courrier n'a été trouvé".
 - Dans le cas ou aucun **nouveau** fichier n'a été téléchargé le script se terminera par "[OK] Aucun nouveau courrier n'a été trouvé"
+- Si vous utilisez ce script pour une tâche planifiée Cron, Vérifiez que le PATH de votre environnement Cron permette au script de trouver les executables ! Voir le commit a8a0ef4 ou j'ai du ajouter /usr/local/bin/ au PATH pour que les différents outils de html-xml-utils puissent être lancés depuis la tâche cron.
