@@ -12,7 +12,7 @@ Donc j'ai fini par faire un script qui à ce jour (14/12/2016) fonctionne très 
 - Ouvrir une session sur pôle-emploi.
 - Récupérer la liste des courriers déposés dans mon espace candidat au cours des 30 derniers jours.
 - Télécharger sur ma machine les PDF des courriers qui ne sont pas déjà présents.
-- [macOS uniquement] Leur mettre une étiquette de couleur bleue pour distinguer les nouveaux PDF facilement
+- [macOS uniquement] Leur mettre une étiquette de couleur bleue pour distinguer les nouveaux PDF facilement.
 
 ### Environnement nécessaire
 - Zsh.
