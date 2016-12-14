@@ -28,7 +28,7 @@ Le script va alors vous demander :
 - votre mot de passe.
 - votre code postal (ben ouais, va comprendre en quoi c'est imperatif pour t'identifiant sur le site web).
 
-Puis il téléchargera tous les PDFs **ayant été déposés dans les 30 derniers jours** qu'il trouvera sur votre compte et qui ne sont pas déjà **dans le repertoire courant**.
+Puis il téléchargera tous les PDFs **ayant été déposés dans les 30 derniers jours** qu'il trouvera sur votre compte pôle-emploi et qui ne sont pas déjà **dans le repertoire courant**.
 
 Enfin, il m'affichera dans le terminal le résumé de ce qui s'est passé.
 
@@ -51,6 +51,15 @@ Si l'option `--pdf-dir` n'est pas spécifiée, le script téléchargera les nouv
 
 Un exemple concret d'utilisation du script avec passage de tous les paramètres :
 `./pe-curl.sh --id 1234567A --pass 123456 --zip 42000 --imsg 0642424242 --pdf-dir ~/Documents/polochon`
+
+### Tâche Cron
+Le script peut tout à fait être utilisé pour une tâche Cron, c'est même le but !
+Pour éditer la crontab de l'utilisateur actif :
+```shell
+ crontab -e
+```
+Ceci devrait ouvir la crontab dans vi (ou un autre éditeur si vous avez spécifié un autre éditeur), passez en mode insertion (touche `i`) puis ajoutez votre tâche Cron.
+Appuyer ensuite sur `Esc` puis taper `:wq` pour sauvegarder, et voilà !
 
 ### Remarques
 - Le script ne vérifie (pour l'instant en tout cas) pas si le login s'est bien passé, donc vérifiez bien que vos informations de connexion sont correctes, sans quoi le script vous dirra sempiternellement "Aucun courrier n'a été trouvé".
