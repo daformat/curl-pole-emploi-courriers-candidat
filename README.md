@@ -61,7 +61,7 @@ Pour éditer la crontab de l'utilisateur actif :
 ```
 Ceci devrait ouvir la crontab dans vi (ou un autre éditeur si vous avez spécifié un autre éditeur), passez en mode insertion (touche `i`) puis ajoutez votre tâche Cron.
 
-Appuyer ensuite sur `Esc` puis taper `:wq` pour sauvegarder, et voilà !
+Appuyez ensuite sur `Esc` puis tapez `:wq` pour sauvegarder, et voilà !
 
 ### Remarques
 - Le script ne vérifie (pour l'instant en tout cas) pas si le login s'est bien passé, donc vérifiez bien que vos informations de connexion sont correctes, sans quoi le script vous dirra sempiternellement "Aucun courrier n'a été trouvé".
