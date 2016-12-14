@@ -58,7 +58,7 @@ succeed() {
 
 # ---
 
-echo '\nVérifications préliminaires'
+echo '\nVérifications préliminaires...'
 
 auth_page_url='https://candidat.pole-emploi.fr/candidat/espacepersonnel/authentification'
 auth_page=`curl -s -k -D - $auth_page_url --cookie-jar cookies.txt`
@@ -214,7 +214,7 @@ else
 fi
 
 
-echo "\nRécupération de la page courrier"
+echo "\nRécupération de la page courrier..."
 
 # Ok, done, now grab the actual mail list page.
 courriers=`curl -s -k -D - -L "$action" --data-urlencode "jeton=$jeton" --cookie cookies.txt --cookie-jar cookies.txt`
@@ -244,22 +244,24 @@ fi
 
 printf '%s\n' "$liens_courriers" | while IFS= read -r lien
 do
-  print -P "%U$lien%u"
-  # grab only the mail number, which is going to be the pdf filename
-  num_pdf=`echo $lien | grep -oE "\d+$"`
+  if [ ! -w $lien ]; then
+    print -P "%U$lien%u"
+    # grab only the mail number, which is going to be the pdf filename
+    num_pdf=`echo $lien | grep -oE "\d+$"`
 
-  # this should NOT BE NEEDED since it's just a wrapper for displaying the pdf file in an iframe when you are using a browser
-  # HOWEVER commenting the request will trigger a 500 error on the server... so yeah, we'll just keep that extra request
-  page_courrier=`curl -s -k -L "$lien" --cookie cookies.txt`
+    # this should NOT BE NEEDED since it's just a wrapper for displaying the pdf file in an iframe when you are using a browser
+    # HOWEVER commenting the request will trigger a 500 error on the server... so yeah, we'll just keep that extra request
+    page_courrier=`curl -s -k -L "$lien" --cookie cookies.txt`
 
-  # Try to get the PDF
-  fichier_pdf=`curl -k -s -I "https://courriers.pole-emploi.fr/courriersweb/affichagepdf:pdf/$num_pdf" --cookie cookies.txt`
-  http_status=`echo $fichier_pdf | grep -o 'HTTP/1.1 200 OK'`
-  if [ -z $http_status ]
-  then
-    fail "Code HTTP inattendu lors du téléchargement du courrier n°$num_pdf"
-  else
-    succeed "Courrier n°$num_pdf téléchargeable"
+    # Try to get the PDF
+    fichier_pdf=`curl -k -s -I "https://courriers.pole-emploi.fr/courriersweb/affichagepdf:pdf/$num_pdf" --cookie cookies.txt`
+    http_status=`echo $fichier_pdf | grep -o 'HTTP/1.1 200 OK'`
+    if [ -z $http_status ]
+    then
+      fail "Code HTTP inattendu lors du téléchargement du courrier n°$num_pdf"
+    else
+      succeed "Courrier n°$num_pdf téléchargeable"
+    fi
   fi
 
 done
