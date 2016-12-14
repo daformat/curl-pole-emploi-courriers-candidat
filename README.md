@@ -3,6 +3,9 @@
 ## Welcome to pôle emploi!
 A zsh script to log-in to pole-emploi from the command-line, and download pdf "courriers" files to the current directory using curl and a few other unix friends.
 
+```shell
+./pe-curl.sh [--id identifiant] [--pass mot-de-passe] [--zip code-postal] [--pdf-dir repertoire-pdf] [--imsg telephone] [--shut-the-fuck-up]
+```
 ## Bienvenue à pôle emploi!
 J'en avais marre de devoir me taper toutes les étapes de connexion sur pôle-emploi juste pour aller vérifier si j'avais reçu du nouveau courrier (leur système de notification mail n'est vraiment pas fiable et prévient parfois trop tard, voir pas du tout quand un nouveau courrier est déposé dans mon espace candidat).
 Donc j'ai fini par faire un script qui à ce jour (14/12/2016) fonctionne très bien pour pouvoir depuis un terminal unix :
@@ -33,7 +36,7 @@ En bonus, pour ceux qui sont sous macOS, il va générer une notification systè
 
 #### Avec paramètres
 ```shell
-  ./pe-curl.sh [--id identifiant] [--pass mot-de-passe] [--zip code-postal] [--pdf-dir repertoire-pdf] [--imsg telephone] [--shut-the-fuck-up]
+./pe-curl.sh [--id identifiant] [--pass mot-de-passe] [--zip code-postal] [--pdf-dir repertoire-pdf] [--imsg telephone] [--shut-the-fuck-up]
 ```
 Les options suivantes sont disponibles :
 - `--id` _identifiant_ - permet de spécifier votre identifiant pôle-emploi.
