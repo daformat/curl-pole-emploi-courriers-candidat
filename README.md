@@ -54,11 +54,13 @@ Un exemple concret d'utilisation du script avec passage de tous les paramètres 
 
 ### Tâche Cron
 Le script peut tout à fait être utilisé pour une tâche Cron, c'est même le but !
+
 Pour éditer la crontab de l'utilisateur actif :
 ```shell
  crontab -e
 ```
 Ceci devrait ouvir la crontab dans vi (ou un autre éditeur si vous avez spécifié un autre éditeur), passez en mode insertion (touche `i`) puis ajoutez votre tâche Cron.
+
 Appuyer ensuite sur `Esc` puis taper `:wq` pour sauvegarder, et voilà !
 
 ### Remarques
