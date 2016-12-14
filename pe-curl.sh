@@ -1,5 +1,8 @@
 #!/usr/bin/env zsh
 
+# just in case
+export PATH=/usr/local/bin:$PATH
+
 zparseopts -A ARGUMENTS -id: -pass: -zip: -pdf-dir: -imsg:
 
 identifiant=$ARGUMENTS[--id]
