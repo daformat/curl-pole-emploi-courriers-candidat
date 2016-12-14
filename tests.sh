@@ -241,7 +241,7 @@ else
   # echo $liens_courriers
 fi
 
-
+# Bouclons sur les liens trouvés
 printf '%s\n' "$liens_courriers" | while IFS= read -r lien
 do
   if [ ! -w $lien ]; then
