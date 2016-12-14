@@ -42,13 +42,17 @@ while [ -z $zipcode ]; do
 done
 
 erreurs=0
-
+succes=0
 fail() {
   print -P "${BOLD_RED}[Erreur]${RESET} $1"
   let 'erreurs++'
 }
+warn() {
+  print -P "${BOLD_YELLOW}[Warning]${RESET} $1"
+}
 succeed() {
   print -P "${BOLD_GREEN}[Ok]${RESET} $1"
+  let 'succes++'
 }
 
 
@@ -169,7 +173,7 @@ then
   fail "L'authentification n'a pas renvoyé vers l'adresse habituelle"
   test_location2=`echo $home_candidat | grep -o 'Location: https://candidat.pole-emploi.fr/candidat/espacepersonnel/authentification'`
   if [ ! -z $test_location2 ]; then
-    fail "Les informations de connexions semblent fausses (redirigé à nouveau vers l'authentification)"
+    warn "Les informations de connexions semblent fausses (redirigé à nouveau vers l'authentification)"
   fi
 else
   succeed "Correctement renvoyé vers l'espace personnel (https://candidat.pole-emploi.fr/candidat/espacepersonnel/regroupements)"
@@ -234,13 +238,39 @@ then
 else
   succeed "Le liste de courriers reçue n'est pas vide"
   echo "\nCourriers disponbiles : "
-  echo $liens_courriers
+  # echo $liens_courriers
 fi
+
+
+printf '%s\n' "$liens_courriers" | while IFS= read -r lien
+do
+  print -P "%U$lien%u"
+  # grab only the mail number, which is going to be the pdf filename
+  num_pdf=`echo $lien | grep -oE "\d+$"`
+
+  # this should NOT BE NEEDED since it's just a wrapper for displaying the pdf file in an iframe when you are using a browser
+  # HOWEVER commenting the request will trigger a 500 error on the server... so yeah, we'll just keep that extra request
+  page_courrier=`curl -s -k -L "$lien" --cookie cookies.txt`
+
+  # Try to get the PDF
+  fichier_pdf=`curl -k -s -I "https://courriers.pole-emploi.fr/courriersweb/affichagepdf:pdf/$num_pdf" --cookie cookies.txt`
+  http_status=`echo $fichier_pdf | grep -o 'HTTP/1.1 200 OK'`
+  if [ -z $http_status ]
+  then
+    fail "Code HTTP inattendu lors du téléchargement du courrier n°$num_pdf"
+  else
+    succeed "Courrier n°$num_pdf téléchargeable"
+  fi
+
+done
+
+
 
 # Récap final
 if [[ $erreurs -gt O ]]
 then
-  print -P "\n${BOLD_RED}Nombre d'erreurs détéctées : $erreurs${RESET}"
+  print -P "\n${BOLD_GREEN}Nombre de succès détéctés : $succes${RESET}"
+  print -P "${BOLD_RED}Nombre d'erreurs détéctées : $erreurs${RESET}"
   if hash osascript 2>/dev/null;
   then
     if [ ! -z $imessage_address ]
