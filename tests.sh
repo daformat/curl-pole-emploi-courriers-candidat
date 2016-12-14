@@ -160,9 +160,9 @@ home_candidat=`curl -s -k -L -D - "https://candidat.pole-emploi.fr$formaction" -
 home_candidat_http_status=`echo $home_candidat | grep -o 'HTTP/1.1 200 OK'`
 if [ -z $home_candidat_http_status ]
 then
-  fail "L'authentification a renvoyé a un code HTTP inattendu"
+  fail "La requête d'authentification a renvoyé a un code HTTP inattendu"
 else
-  succeed "Authentification réussie"
+  succeed "La requête d'authentification a réussi (code HTTP 200)"
 fi
 
 # Vérifions que nous avons bien été renvoyés à l'adresse habituelle
