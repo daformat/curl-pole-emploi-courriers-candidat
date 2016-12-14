@@ -92,7 +92,7 @@ do
   else
 
     # If no pdf was found in the current directory, let's download it
-    echo "${BOLD_GREEN}[Nouveau courrier]${RESET} Téléchargement du courrier n°$num_pdf..."
+    print -P "%B[Nouveau courrier]%b Téléchargement du courrier n°$num_pdf..."
     # this should NOT BE NEEDED since it's just a wrapper for displaying the pdf file in an iframe when you are using a browser
     # HOWEVER commenting the request will trigger a 500 error on the server... so yeah, we'll just keep that extra request
     page_courrier=`curl -s -k -L "$lien" --cookie cookies.txt`
@@ -125,7 +125,7 @@ then
 	fi
 
   # Store & print output
-  output="%B$nouveaux_courriers_telecharges $texte%b"
+  output="${BOLD_GREEN}[OK]${RESET} %B$nouveaux_courriers_telecharges $texte%b"
   print -P $output
 
   # If on macOS, we can have fun using osascript
@@ -156,11 +156,13 @@ END
     fi
   fi
 
-  # Heck let's even SAY it if the computer can !
-  if hash say 2>/dev/null;
-  then
-      say "Alerte pôle-emploi !"
-      say "$nouveaux_courriers_telecharges $texte"
+  if [[ ! $* == *--shut-the-fuck-up* ]]; then
+    # Heck let's even SAY it if the computer can !
+    if hash say 2>/dev/null;
+    then
+        say "Alerte pôle-emploi !"
+        say "$nouveaux_courriers_telecharges $texte"
+    fi
   fi
 
 else
@@ -169,7 +171,7 @@ else
   # -------------------------------------------------------------
 
   # Store & print output
-  output="%BAucun nouveau courrier n'a été trouvé%b"
+  output="${BOLD_BLUE}[OK]${RESET} %BAucun nouveau courrier n'a été trouvé%b"
   print -P $output
 fi
 
