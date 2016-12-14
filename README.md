@@ -27,17 +27,28 @@ Le script va alors vous demander :
 
 Puis il téléchargera tous les PDFs **ayant été déposés dans les 30 derniers jours** qu'il trouvera sur votre compte et qui ne sont pas déjà **dans le repertoire courant**.
 
+Enfin, il m'affichera dans le terminal le résumé de ce qui s'est passé.
+
+En bonus, pour ceux qui sont sous macOS, il va générer une notification système, potentiellement envoyer une notification iMessage vers le numéro de votre choix, et même dire à haute voix qu'il a récupéré de nouveaux messages.
+
 #### Avec paramètres
 ```shell
-  ./pe-curl.sh [--id identifiant] [--pass mot-de-passe] [--zip code-postal] [--pdf-dir repertoire-pdf] [--imsg telephone]
+  ./pe-curl.sh [--id identifiant] [--pass mot-de-passe] [--zip code-postal] [--pdf-dir repertoire-pdf] [--imsg telephone] [--shut-the-fuck-up]
 ```
 Les options suivantes sont disponibles :
 - `--id` _identifiant_ - permet de spécifier votre identifiant pôle-emploi.
-- `--pass` _mot-de-pass_ - permet de spécifier votre mot de passe pôle-emploi.
+- `--pass` _mot-de-passe_ - permet de spécifier votre mot de passe pôle-emploi.
 - `--zip` _code-postal_ - permet de spécifier votre code postal.
 - `--pdf-dir` _repertoire-pdf_ - permet de spécifier le répertoire dans lequel chercher et stocker les PDF de pôle-emploi sur votre machine.
 - `--imsg` _telephone_ - permet de spécifier votre numéro de téléphone ou tout autre identifiant iMessage pour vous envoyer une notification lorsque de nouveaux courriers ont été téléchargés.
-
+- `--shut-the-fuck-up` - permet de rendre le script silencieux.
 Si l'une ou plusieurs des options `--id`, `--pass`, ou `--zip` est manquante le script demandera à l'utilisateur de les saisir avant de continuer.
 
 Si l'option `--pdf-dir` n'est pas spécifiée, le script téléchargera les nouveaux courriers dans le répertoire courant, sous réserve qu'il n'y soient pas déjà.
+
+Un exemple concret d'utilisation du script avec passage de tous les paramètres :
+`./pe-curl.sh --id 1234567A --pass 123456 --zip 42000 --imsg 0642424242 --pdf-dir ~/Documents/polochon`
+
+### Remarques
+- Le script ne vérifie (pour l'instant en tout cas) pas si le login s'est bien passé, donc vérifiez bien que vos informations de connexion sont correctes, sans quoi le script vous dirra sempiternellement "Aucun courrier n'a été trouvé".
+- Dans le cas ou aucun **nouveau** fichier n'a été téléchargé le script se terminera par "Aucun courrier n'a été trouvé"
