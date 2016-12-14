@@ -1,10 +1,11 @@
 #!/usr/bin/env zsh
 
-zparseopts -A ARGUMENTS -id: -pass: -zip: -imsg:
+zparseopts -A ARGUMENTS -id: -pass: -zip: -pdf-dir: -imsg:
 
 identifiant=$ARGUMENTS[--id]
 password=$ARGUMENTS[--pass]
 zipcode=$ARGUMENTS[--zip]
+pdf_directory=${ARGUMENTS[--pdf-dir]%/} # the ${var%/} notation is used to remove the eventual trailing slash
 imessage_address=$ARGUMENTS[--imsg]
 
 autoload colors
@@ -16,6 +17,10 @@ for COLOR in RED GREEN YELLOW BLUE MAGENTA CYAN BLACK WHITE; do
     eval BOLD_$COLOR='$fg_bold[${(L)COLOR}]'
 done
 eval RESET='$reset_color'
+
+if [ -z $pdf_directory ]; then
+  pdf_directory='.'
+fi
 
 # Ask for login info if they were not provided as arguments
 while [ -z $identifiant ]; do
@@ -80,7 +85,7 @@ do
   num_pdf=`echo $lien | grep -oE "\d+$"`
 
   # Check if the pdf is already present in the current directory
-  if [ -f "$num_pdf.pdf" ]
+  if [ -f "$pdf_directory/$num_pdf.pdf" ]
   then
     # The pdf was found, no need to re-download...
     #echo "Le courrier n°$num_pdf a déjà été téléchargé."
@@ -96,7 +101,7 @@ do
     #fichier_pdf=`curl -k -L -O "https://courriers.pole-emploi.fr$lien_pdf" --cookie cookies.txt`
 
     # Grab the pdf and save it to the current directory
-    fichier_pdf=`curl -k -L --progress-bar -o "$num_pdf.pdf" "https://courriers.pole-emploi.fr/courriersweb/affichagepdf:pdf/$num_pdf" --cookie cookies.txt`
+    fichier_pdf=`curl -k -L --progress-bar -o "$pdf_directory/$num_pdf.pdf" "https://courriers.pole-emploi.fr/courriersweb/affichagepdf:pdf/$num_pdf" --cookie cookies.txt`
 
     # finally set the flag so we know at least one pdf was found.
     let 'nouveaux_courriers_telecharges++'
@@ -167,7 +172,6 @@ else
   output="%BAucun nouveau courrier n'a été trouvé%b"
   print -P $output
 fi
-
 
 # Delete cookies ?! http://img12.deviantart.net/d497/i/2015/287/8/5/cookie_monster_____by_supergecko99-d9d2smd.png
 rm cookies.txt
