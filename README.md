@@ -55,4 +55,4 @@ Un exemple concret d'utilisation du script avec passage de tous les paramètres 
 
 ### Remarques
 - Le script ne vérifie (pour l'instant en tout cas) pas si le login s'est bien passé, donc vérifiez bien que vos informations de connexion sont correctes, sans quoi le script vous dirra sempiternellement "Aucun courrier n'a été trouvé".
-- Dans le cas ou aucun **nouveau** fichier n'a été téléchargé le script se terminera par "Aucun courrier n'a été trouvé"
+- Dans le cas ou aucun **nouveau** fichier n'a été téléchargé le script se terminera par "[OK] Aucun nouveau courrier n'a été trouvé"
