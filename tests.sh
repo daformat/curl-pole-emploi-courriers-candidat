@@ -7,11 +7,12 @@ export PATH=/usr/local/bin:$PATH
 
 
 # Parse arguments
-zparseopts -A ARGUMENTS -id: -pass: -zip:
+zparseopts -A ARGUMENTS -id: -pass: -zip: -imsg:
 
 identifiant=$ARGUMENTS[--id]
 password=$ARGUMENTS[--pass]
 zipcode=$ARGUMENTS[--zip]
+imessage_address=$ARGUMENTS[--imsg]
 
 
 # Setup text colors
@@ -240,6 +241,30 @@ fi
 if [[ $erreurs -gt O ]]
 then
   print -P "\n${BOLD_RED}Nombre d'erreurs détéctées : $erreurs${RESET}"
+  if hash osascript 2>/dev/null;
+  then
+    if [ ! -z $imessage_address ]
+    then
+      # On balance un iMessage si ça a été demandé...
+      osascript<<END
+on is_running(appName)
+  tell application "System Events" to (name of processes) contains appName
+end is_running
+
+set was_running to is_running("Messages")
+
+tell application "Messages"
+  set targetService to 1st service whose service type = iMessage
+  set targetBuddy to buddy "$imessage_address" of targetService
+  send "Des erreurs ont été détéctées lors du script de tests pole-emploi (dans le terminal taper mail pour consulter le résultat de la tache cron)" to targetBuddy
+end tell
+
+if was_running is not true then
+  quit app "Messages"
+end if
+END
+    fi
+  fi
 else
   print -P "\n${BOLD_GREEN}Aucun problème détécté${RESET}"
 fi
