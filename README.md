@@ -6,7 +6,7 @@ A zsh script to log-in to pole-emploi from the command-line, and download pdf "c
 ```shell
 ./pe-curl.sh [--id identifier] [--pass password] [--zip zipcode] [--pdf-dir path-to-pdf] [--imsg phone] [--shut-the-fuck-up]
 ```
-## Bienvenue à pôle emploi!
+## Bienvenue à pôle emploi !
 J'en avais marre de devoir me taper toutes les étapes de connexion sur pôle-emploi juste pour aller vérifier si j'avais reçu du nouveau courrier (leur système de notification mail n'est vraiment pas fiable et prévient parfois trop tard, voir pas du tout quand un nouveau courrier est déposé dans mon espace candidat).
 Donc j'ai fini par faire un script qui à ce jour (14/12/2016) fonctionne très bien pour pouvoir depuis un terminal unix :
 - Ouvrir une session sur pôle-emploi.
