@@ -64,6 +64,6 @@ Ceci devrait ouvir la crontab dans vi (ou un autre éditeur si vous avez spécif
 Appuyez ensuite sur `Esc` puis tapez `:wq` pour sauvegarder, et voilà !
 
 ### Remarques
-- Le script ne vérifie (pour l'instant en tout cas) pas si le login s'est bien passé, donc vérifiez bien que vos informations de connexion sont correctes, sans quoi le script vous dira sempiternellement "Aucun courrier n'a été trouvé".
+- Le script ne vérifie pas si le login s'est bien passé (pour l'instant en tout cas), donc vérifiez bien que vos informations de connexion sont correctes, sans quoi le script vous dira sempiternellement "Aucun courrier n'a été trouvé".
 - Dans le cas ou aucun **nouveau** fichier n'a été téléchargé le script se terminera par "[OK] Aucun nouveau courrier n'a été trouvé"
 - Si vous utilisez ce script pour une tâche planifiée Cron, vérifiez que le PATH de votre environnement Cron permette au script de trouver les executables ! Voir le commit [f692f72](https://github.com/daformat/curl-pole-emploi-courriers-candidat/commit/f692f728e7ade219893b4692421118f878b4df8c) ou j'ai du ajouter /usr/local/bin/ au PATH pour que les différents outils de html-xml-utils puissent être lancés depuis la tâche cron.
