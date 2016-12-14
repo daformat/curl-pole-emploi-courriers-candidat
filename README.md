@@ -42,6 +42,7 @@ Les options suivantes sont disponibles :
 - `--pdf-dir` _repertoire-pdf_ - permet de spécifier le répertoire dans lequel chercher et stocker les PDF de pôle-emploi sur votre machine.
 - `--imsg` _telephone_ - permet de spécifier votre numéro de téléphone ou tout autre identifiant iMessage pour vous envoyer une notification lorsque de nouveaux courriers ont été téléchargés.
 - `--shut-the-fuck-up` - permet de rendre le script silencieux.
+
 Si l'une ou plusieurs des options `--id`, `--pass`, ou `--zip` est manquante le script demandera à l'utilisateur de les saisir avant de continuer.
 
 Si l'option `--pdf-dir` n'est pas spécifiée, le script téléchargera les nouveaux courriers dans le répertoire courant, sous réserve qu'il n'y soient pas déjà.
