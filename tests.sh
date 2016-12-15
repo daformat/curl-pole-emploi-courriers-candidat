@@ -5,6 +5,7 @@
 # just in case
 export PATH=/usr/local/bin:$PATH
 
+# ---
 
 # Setup text colors
 autoload colors
@@ -17,6 +18,38 @@ for COLOR in RED GREEN YELLOW BLUE MAGENTA CYAN BLACK WHITE; do
 done
 eval RESET='$reset_color'
 
+# ---
+
+# Output helpers
+erreurs=0
+succes=0
+test_sets=0
+fail() {
+  print -P "${BOLD_RED}[Erreur]${RESET} $1"
+  let 'erreurs++'
+}
+warn() {
+  print -P "${BOLD_YELLOW}[Warning]${RESET} $1"
+}
+succeed() {
+  print -P "${BOLD_GREEN}[Ok]${RESET} $1"
+  let 'succes++'
+}
+info() {
+  print -P "${BOLD_CYAN}[Info]${RESET} $1"
+}
+new_test_set() {
+  let 'test_sets++'
+  print -P "\n${BOLD_BLUE}[Étape $test_sets]${RESET} $1"
+}
+print_time() {
+  printf '%dh:%dm:%ds' $(($1/3600)) $(($1%3600/60)) $(($1%60))
+}
+
+
+# ---
+
+# Configuration / options
 
 # Parse arguments
 zparseopts -A ARGUMENTS -id: -pass: -zip: -imsg: -conf:
@@ -25,13 +58,12 @@ config_file=$ARGUMENTS[--conf]
 
 script_dir=`dirname $0`
 #echo "Configuration demandée : "$config_file
-
 if [ -z $config_file ]; then
   config_file="$script_dir/pe.conf"
 fi
-
 #echo "Configuration utilisée : "$config_file
 
+# Default configuration
 typeset -A config
 
 config=(
@@ -39,6 +71,7 @@ config=(
   shut_up false
 )
 
+# Parse configuration file if readable
 if [ -r $config_file ]
 then
   while read line
@@ -51,6 +84,7 @@ then
   done < $config_file
 fi
 
+# Override configuration file values with script options when given any
 if [ ! -z $ARGUMENTS[--id] ]; then
   config[identifiant]=$ARGUMENTS[--id]
 fi
@@ -82,12 +116,17 @@ config[pdf_directory]=$(eval cd $config[pdf_directory]; pwd)
 
 # echo $config[@]
 
+# Using variables as a shorthand
 identifiant=$config[identifiant]
 password=$config[password] # this should be provided via a config file so it's more secure
 zipcode=$config[zipcode]
 pdf_directory=${config[pdf_directory]%/} # the ${var%/} notation is used to remove the eventual trailing slash
 imessage_address=$config[imessage_address]
 
+
+# ---
+
+# Prompt for any missing required info
 
 # Ask for login info if they were not provided as arguments
 while [ -z $identifiant ]; do
@@ -103,30 +142,16 @@ while [ -z $zipcode ]; do
   read zipcode
 done
 
-erreurs=0
-succes=0
-test_sets=0
-fail() {
-  print -P "${BOLD_RED}[Erreur]${RESET} $1"
-  let 'erreurs++'
-}
-warn() {
-  print -P "${BOLD_YELLOW}[Warning]${RESET} $1"
-}
-succeed() {
-  print -P "${BOLD_GREEN}[Ok]${RESET} $1"
-  let 'succes++'
-}
+# ---
 
-new_test_set() {
-  let 'test_sets++'
-  print -P "\n${BOLD_BLUE}[Étape $test_sets]${RESET} $1"
-}
-
+# Start tests
 
 # ---
 
-new_test_set "Vérifications préliminaires..."
+start_time=`date +%s`
+print -P "\n%B[0h:0m:0s]%b - Démarrage des tests"
+
+new_test_set "Vérifications préliminaires, démarrage de la session..."
 
 auth_page_url='https://candidat.pole-emploi.fr/candidat/espacepersonnel/authentification'
 auth_page=`curl -s -k -D - $auth_page_url --cookie-jar cookies.txt`
@@ -177,6 +202,7 @@ else
 fi
 
 
+# ---
 
 new_test_set "Pré-authentification..."
 
@@ -219,6 +245,7 @@ else
 fi
 
 
+# ---
 
 new_test_set "Authentification..."
 
@@ -250,7 +277,9 @@ else
 fi
 
 
-new_test_set "Vérification de la disponibilité du service courrier..."
+# ---
+
+new_test_set "Vérification de la capacité à accéder au service courrier..."
 
 # we first get a page that is a javascript submited form, so we need to submit the form on our own, this adds a new cookie with the courrier session ID
 url="https://candidat.pole-emploi.fr/candidat/espacepersonnel/regroupements/mesechangesavecpoleemploi.mes_courriers:debrancherversleservice"
@@ -275,17 +304,18 @@ else
   succeed "Action trouvée ($action)"
 fi
 
-
 # Vérifions que nous avons bien un jeton
 if [ -z $jeton ]
 then
-  fail "Impossible de trouver un jeton pour le formulaire de courrier"
+  fail "Impossible de trouver un jeton dans le formulaire d'identification du service courrier"
 else
-  succeed "Jeton pour le courrier PE trouvé ($jeton)"
+  succeed "Jeton d'accès pour le service courrier obtenu ($jeton)"
 fi
 
 
-new_test_set "Récupération de la page courrier..."
+# ---
+
+new_test_set "Récupération de la liste de courriers récents..."
 
 # Ok, done, now grab the actual mail list page.
 courriers=`curl -s -k -D - -L "$action" --data-urlencode "jeton=$jeton" --cookie cookies.txt --cookie-jar cookies.txt`
@@ -296,10 +326,10 @@ if [ -z $courriers_http_status ]
 then
   fail "Code HTTP inattendu"
 else
-  succeed "Liste des derniers courriers reçue"
+  succeed "Liste des derniers courriers obtenue avec succès"
 fi
 
-
+# On récupère tous les liens
 liens_courriers=`echo $courriers | hxselect table.listingPyjama | hxwls -b "$action"`
 
 # Vérifions les liens trouvés
@@ -308,9 +338,16 @@ then
   fail "Aucun courrier n'a été trouvé dans la liste"
 else
   succeed "Le liste de courriers reçue n'est pas vide"
-
-  new_test_set "Courriers disponbiles : "
   # echo $liens_courriers
+fi
+
+
+# ---
+
+new_test_set "Vérification de la possibilité de télécharger les courriers..."
+
+if [ -z $liens_courriers ]; then
+  info 'Pas de courrier trouvé, aucun test effectué'
 fi
 
 # Bouclons sur les liens trouvés
@@ -339,8 +376,16 @@ do
 done
 
 
+# ---
 
 # Récap final
+
+end_time=`date +%s`
+run_time=$((end_time-start_time))
+t=$(print_time $run_time)
+
+print -P "\n%B[$t]%b - Terminé"
+
 if [[ $erreurs -gt O ]]
 then
   print -P "\n${BOLD_GREEN}Nombre de succès détéctés : $succes${RESET}"
