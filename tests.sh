@@ -6,6 +6,18 @@
 export PATH=/usr/local/bin:$PATH
 
 
+# Setup text colors
+autoload colors
+if [[ "$terminfo[colors]" -gt 8 ]]; then
+    colors
+fi
+for COLOR in RED GREEN YELLOW BLUE MAGENTA CYAN BLACK WHITE; do
+    eval $COLOR='$fg_no_bold[${(L)COLOR}]'
+    eval BOLD_$COLOR='$fg_bold[${(L)COLOR}]'
+done
+eval RESET='$reset_color'
+
+
 # Parse arguments
 zparseopts -A ARGUMENTS -id: -pass: -zip: -imsg: -conf
 
@@ -72,18 +84,6 @@ pdf_directory=${config[pdf_directory]%/} # the ${var%/} notation is used to remo
 imessage_address=$config[imessage_address]
 
 
-# Setup text colors
-autoload colors
-if [[ "$terminfo[colors]" -gt 8 ]]; then
-    colors
-fi
-for COLOR in RED GREEN YELLOW BLUE MAGENTA CYAN BLACK WHITE; do
-    eval $COLOR='$fg_no_bold[${(L)COLOR}]'
-    eval BOLD_$COLOR='$fg_bold[${(L)COLOR}]'
-done
-eval RESET='$reset_color'
-
-
 # Ask for login info if they were not provided as arguments
 while [ -z $identifiant ]; do
   print -P -n "%BIdentifiant Pôle-Emploi :%b "
@@ -100,6 +100,7 @@ done
 
 erreurs=0
 succes=0
+test_sets=0
 fail() {
   print -P "${BOLD_RED}[Erreur]${RESET} $1"
   let 'erreurs++'
@@ -112,10 +113,15 @@ succeed() {
   let 'succes++'
 }
 
+new_test_set() {
+  let 'test_sets++'
+  print -P "\n${BOLD_BLUE}[Étape $test_sets]${RESET} $1"
+}
+
 
 # ---
 
-echo '\nVérifications préliminaires...'
+new_test_set "Vérifications préliminaires..."
 
 auth_page_url='https://candidat.pole-emploi.fr/candidat/espacepersonnel/authentification'
 auth_page=`curl -s -k -D - $auth_page_url --cookie-jar cookies.txt`
@@ -167,7 +173,8 @@ fi
 
 
 
-echo "\nPré-authentification..."
+new_test_set "Pré-authentification..."
+
 print -P "%BIdentifiant :%b $identifiant"
 auth_page2_url="https://candidat.pole-emploi.fr$formaction"
 auth_page2=`curl -s -k -L -D - $auth_page2_url --data-urlencode "t%3Aformdata=$formdata" --data "champTexteIdentifiant=$identifiant&t%3Asubmit=%5B%22boutonContinuer%22%2C%22boutonContinuer%22%5D&boutonContinuer=Poursuivre" --cookie cookies.txt --cookie-jar cookies.txt`
@@ -208,7 +215,8 @@ fi
 
 
 
-echo "\nAuthentification..."
+new_test_set "Authentification..."
+
 print -P "%BMot de passe :%b " $(echo $password | sed -e 's/./•/g')
 print -P "%BCode postal :%b $zipcode"
 home_candidat=`curl -s -k -L -D - "https://candidat.pole-emploi.fr$formaction" --data-urlencode "t%3Aformdata=$formdata" --data "t%3Asubmit=%5B%22boutonValider%22%2C%22boutonValider%22%5D&champMotDePasse=$password&champTexteCodePostal=$zipcode&boutonValider=Se+connecter" --cookie cookies.txt --cookie-jar cookies.txt`
@@ -237,7 +245,8 @@ else
 fi
 
 
-echo "\nVérification de la disponibilité du service courrier..."
+new_test_set "Vérification de la disponibilité du service courrier..."
+
 # we first get a page that is a javascript submited form, so we need to submit the form on our own, this adds a new cookie with the courrier session ID
 url="https://candidat.pole-emploi.fr/candidat/espacepersonnel/regroupements/mesechangesavecpoleemploi.mes_courriers:debrancherversleservice"
 mes_courriers=`curl -s -k -D - -L "$url" --cookie cookies.txt`
@@ -271,7 +280,7 @@ else
 fi
 
 
-echo "\nRécupération de la page courrier..."
+new_test_set "Récupération de la page courrier..."
 
 # Ok, done, now grab the actual mail list page.
 courriers=`curl -s -k -D - -L "$action" --data-urlencode "jeton=$jeton" --cookie cookies.txt --cookie-jar cookies.txt`
@@ -294,7 +303,8 @@ then
   fail "Aucun courrier n'a été trouvé dans la liste"
 else
   succeed "Le liste de courriers reçue n'est pas vide"
-  echo "\nCourriers disponbiles : "
+
+  new_test_set "Courriers disponbiles : "
   # echo $liens_courriers
 fi
 
@@ -302,7 +312,7 @@ fi
 printf '%s\n' "$liens_courriers" | while IFS= read -r lien
 do
   if [ ! -w $lien ]; then
-    print -P "%U$lien%u"
+    #print -P "%U$lien%u"
     # grab only the mail number, which is going to be the pdf filename
     num_pdf=`echo $lien | grep -oE "\d+$"`
 
