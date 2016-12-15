@@ -19,15 +19,18 @@ eval RESET='$reset_color'
 
 
 # Parse arguments
-zparseopts -A ARGUMENTS -id: -pass: -zip: -imsg: -conf
+zparseopts -A ARGUMENTS -id: -pass: -zip: -imsg: -conf:
 
 config_file=$ARGUMENTS[--conf]
 
+script_dir=`dirname $0`
+#echo "Configuration demandée : "$config_file
+
 if [ -z $config_file ]; then
-  config_file='./pe.conf'
+  config_file="$script_dir/pe.conf"
 fi
 
-# echo "Configuration utilisée : "$config_file
+#echo "Configuration utilisée : "$config_file
 
 typeset -A config
 
