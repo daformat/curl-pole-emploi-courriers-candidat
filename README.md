@@ -69,7 +69,7 @@ identifiant=1234567A
 password=123456
 zipcode=42000
 imessage_address=0642424242
-pdf_directory=/Users/mat/Dropbox/_pro/Administratif/_POLE-EMPLOI/
+pdf_directory=~/Documents/polochon
 shut_up=true
 ```
 
