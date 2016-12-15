@@ -75,7 +75,6 @@ shut_up=true
 
 Pour des questions de sécurité, assurez vous que les permissions du fichier de configuration sont adaptées (0600 semble une bonne idée) et que seuls des utilisateurs de confiance puissent y avoir accès.
 
-**Remarque :** Dans le fichier de configuration, pour le paramètre `pdf_directory`, ne pas utiliser le ~ pour désigner le répertoire de l'utilisateur courant (aucun problème en revanche pour l'utiliser dans le passage d'options avec `--pdf-dir`). Sans quoi le script applescript utilisé pour attribuer une étiquette de couleur aux nouveau fichiers téléchargés ne fonctionnera pas, et un message d'erreur ressemblant à `165:235: execution error: Impossible de convertir POSIX file "/.:2016123456789.pdf" of application "Finder" en type alias. (-1700)` apparaitra dans la sortie du script pe-curl.sh. Le reste du script continuera de fonctionner comme attendu, au pire vous n'aurez pas l'étiquette de couleur...
 
 ### Tâche Cron
 Le script peut tout à fait être utilisé pour une tâche Cron, c'est même le but !
