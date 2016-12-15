@@ -259,7 +259,7 @@ if [ -z $home_candidat_http_status ]
 then
   fail "La requête d'authentification a renvoyé a un code HTTP inattendu"
 else
-  succeed "La requête d'authentification a réussi (code HTTP 200)"
+  succeed "La requête d'authentification a été effectuée avec succès (code HTTP 200)"
 fi
 
 # Vérifions que nous avons bien été renvoyés à l'adresse habituelle
@@ -287,13 +287,23 @@ mes_courriers=`curl -s -k -D - -L "$url" --cookie cookies.txt`
 action=`echo $mes_courriers | grep -oe "action=\".*\"/>" | cut -d'"' -f2`
 jeton=`echo $mes_courriers | grep -oe "value=\".*\"/>" | cut -d'"' -f2`
 
+
 # Vérifions qu'on obtient bien un code 200
 mes_courriers_http_status=`echo $mes_courriers | grep -o 'HTTP/1.1 200 OK'`
 if [ -z $mes_courriers_http_status ]
 then
-  fail "Le service courrier a renvoyé a un code HTTP inattendu"
+  fail "Le service courrier a renvoyé un code HTTP inattendu"
 else
-  succeed "Service courrier contacté avec succès à l'adresse habituelle"
+  succeed "Service courrier contacté avec succès à l'adresse habituelle ($url)"
+fi
+
+# On vérifie que la page n'a pas fait un redirection
+redirections=`echo $mes_courriers | grep 'Location:'`
+if [ ! -z $redirections ]
+then
+  fail "Le service courrier a provoqué une ou plusieurs redirections inattendues"
+else
+  succeed "Pas de redirection inattendue"
 fi
 
 # Vérifions que nous avons bien une action
@@ -302,6 +312,14 @@ then
   fail "Impossible de trouver une action le formulaire de courrier"
 else
   succeed "Action trouvée ($action)"
+fi
+
+# Vérifions que l'action est bien l'action habituelle
+if [ ! $action = 'https://courriers.pole-emploi.fr/courriersweb/acces/AccesCourriers' ]
+then
+  fail "L'action ne correspond pas à l'action attendue"
+else
+  succeed "L'action trouvée renvoie au bon endroit"
 fi
 
 # Vérifions que nous avons bien un jeton
@@ -326,11 +344,20 @@ if [ -z $courriers_http_status ]
 then
   fail "Code HTTP inattendu"
 else
-  succeed "Liste des derniers courriers obtenue avec succès"
+  succeed "Code HTTP 200 reçu pour $action"
 fi
 
-# On récupère tous les liens
-liens_courriers=`echo $courriers | hxselect table.listingPyjama | hxwls -b "$action"`
+# On vérifie que qu'on récupère bien la table qui contient les liens vers les messages
+table_courriers=`echo $courriers | hxselect table.listingPyjama`
+if [ -z $table_courriers ]
+then
+  fail "Impossible de récupérer la table contenant les messages"
+else
+  succeed "La table contenant les messages a été extraite avec succès"
+fi
+
+# On récupère tous les liens vers les message
+liens_courriers=`echo $table_courriers | hxwls -b "$action"`
 
 # Vérifions les liens trouvés
 if [ -z $liens_courriers ]
@@ -415,7 +442,7 @@ END
     fi
   fi
 else
-  print -P "\n${BOLD_GREEN}Aucun problème détécté${RESET}"
+  print -P "\n${BOLD_GREEN}Aucun problème détécté${RESET}\nGreat success!"
 fi
 
 rm cookies.txt
