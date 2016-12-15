@@ -166,7 +166,7 @@ do
     #fichier_pdf=`curl -k -L -O "https://courriers.pole-emploi.fr$lien_pdf" --cookie cookies.txt`
 
     # Grab the pdf and save it to the current directory
-    fichier_pdf=`curl -k -L --progress-bar -o "$pdf_directory/$num_pdf.pdf" "https://courriers.pole-emploi.fr/courriersweb/affichagepdf:pdf/$num_pdf" --cookie cookies.txt`
+    fichier_pdf=`curl -k --progress-bar -o "$pdf_directory/$num_pdf.pdf" "https://courriers.pole-emploi.fr/courriersweb/affichagepdf:pdf/$num_pdf" --cookie cookies.txt`
 
     # on macOS we can set a color label
     if hash osascript 2>/dev/null;
