@@ -3,13 +3,6 @@
 # just in case
 export PATH=/usr/local/bin:$PATH
 
-zparseopts -A ARGUMENTS -id: -pass: -zip: -pdf-dir: -imsg:
-
-identifiant=$ARGUMENTS[--id]
-password=$ARGUMENTS[--pass]
-zipcode=$ARGUMENTS[--zip]
-pdf_directory=${ARGUMENTS[--pdf-dir]%/} # the ${var%/} notation is used to remove the eventual trailing slash
-imessage_address=$ARGUMENTS[--imsg]
 
 autoload colors
 if [[ "$terminfo[colors]" -gt 8 ]]; then
@@ -21,9 +14,70 @@ for COLOR in RED GREEN YELLOW BLUE MAGENTA CYAN BLACK WHITE; do
 done
 eval RESET='$reset_color'
 
-if [ -z $pdf_directory ]; then
-  pdf_directory='.'
+
+zparseopts -A ARGUMENTS -id: -pass: -zip: -pdf-dir: -imsg: -conf:
+
+config_file=$ARGUMENTS[--conf]
+
+if [ -z $config_file ]; then
+  config_file='./pe.conf'
 fi
+
+echo "Configuration utilisée : "$config_file
+
+typeset -A config
+
+config=(
+  pdf_directory '.'
+  shut_up false
+)
+
+if [ -r $config_file ]
+then
+  while read line
+  do
+    if echo $line | grep -F = &>/dev/null
+    then
+      varname=$(echo "$line" | cut -d '=' -f 1)
+      config[$varname]=$(echo "$line" | cut -d '=' -f 2-)
+    fi
+  done < $config_file
+fi
+
+if [ ! -z $ARGUMENTS[--id] ]; then
+  config[identifiant]=$ARGUMENTS[--id]
+fi
+
+if [ ! -z $ARGUMENTS[--pass] ]; then
+  config[password]=$ARGUMENTS[--pass]
+fi
+
+if [ ! -z $ARGUMENTS[--zip] ]; then
+  config[zipcode]=$ARGUMENTS[--zip]
+fi
+
+if [ ! -z $ARGUMENTS[--pdf-dir] ]; then
+  config[pdf_directory]=$ARGUMENTS[--pdf-dir]
+fi
+
+if [ ! -z $ARGUMENTS[--imsg] ]; then
+  config[imessage_address]=$ARGUMENTS[--imsg]
+fi
+
+if [[ $* == *--shut-the-fuck-up* ]]; then
+  config[shut_up]=true
+fi
+
+# Expand relative paths
+config[pdf_directory]=$(cd $config[pdf_directory]; pwd)
+
+echo $config[@]
+
+identifiant=$config[identifiant]
+password=$config[password] # this should be provided via a config file so it's more secure
+zipcode=$config[zipcode]
+pdf_directory=${config[pdf_directory]%/} # the ${var%/} notation is used to remove the eventual trailing slash
+imessage_address=$config[imessage_address]
 
 # Ask for login info if they were not provided as arguments
 while [ -z $identifiant ]; do
@@ -110,6 +164,7 @@ do
     if hash osascript 2>/dev/null;
     then
       # Set the file's label to blue so we can see it's unread
+      echo "$pdf_directory/$num_pdf.pdf"
       osascript -e 'property labelColor : {none:0, orange:1, red:2, yellow:3, blue:4, purple:5, green:6, gray:7}' -e "set myPF to POSIX path of \"$pdf_directory/$num_pdf.pdf\"" -e 'tell application "Finder"' -e 'set label index of (POSIX file myPF as alias) to blue of labelColor' -e 'end tell' > /dev/null
     fi
 
@@ -166,7 +221,7 @@ END
     fi
   fi
 
-  if [[ ! $* == *--shut-the-fuck-up* ]]; then
+  if [ $config[shut_up] = false ]; then
     # Heck let's even SAY it if the computer can !
     if hash say 2>/dev/null;
     then
