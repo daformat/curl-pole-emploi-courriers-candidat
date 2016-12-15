@@ -443,6 +443,9 @@ then
   print -P "${BOLD_RED}Nombre d'erreurs détéctées : $erreurs${RESET}"
   if hash osascript 2>/dev/null;
   then
+    # Trigger a notification
+    osascript -e "display notification \"$erreurs erreur(s) se sont produite(s)\" with title \"Tests Pôle emploi\" sound name \"Pop\""
+
     if [ ! -z $imessage_address ] && [ ! $imessage_address=false ]
     then
       # On balance un iMessage si ça a été demandé...
