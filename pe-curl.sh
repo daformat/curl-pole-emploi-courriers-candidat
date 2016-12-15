@@ -74,10 +74,12 @@ if [[ $* == *--shut-the-fuck-up* ]]; then
   config[shut_up]=true
 fi
 
-# Expand relative paths
-config[pdf_directory]=$(cd $config[pdf_directory]; pwd)
+#echo $config[@]
 
-# echo $config[@]
+# Expand relative paths
+config[pdf_directory]=$(eval cd $config[pdf_directory]; pwd)
+
+#echo $config[@]
 
 identifiant=$config[identifiant]
 password=$config[password] # this should be provided via a config file so it's more secure

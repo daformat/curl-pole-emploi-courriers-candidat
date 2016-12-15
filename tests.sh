@@ -75,8 +75,10 @@ if [[ $* == *--shut-the-fuck-up* ]]; then
   config[shut_up]=true
 fi
 
+# echo $config[@]
+
 # Expand relative paths
-config[pdf_directory]=$(cd $config[pdf_directory]; pwd)
+config[pdf_directory]=$(eval cd $config[pdf_directory]; pwd)
 
 # echo $config[@]
 
