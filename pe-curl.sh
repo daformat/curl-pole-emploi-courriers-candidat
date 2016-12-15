@@ -23,7 +23,7 @@ if [ -z $config_file ]; then
   config_file='./pe.conf'
 fi
 
-echo "Configuration utilisée : "$config_file
+# echo "Configuration utilisée : "$config_file
 
 typeset -A config
 
@@ -71,7 +71,7 @@ fi
 # Expand relative paths
 config[pdf_directory]=$(cd $config[pdf_directory]; pwd)
 
-echo $config[@]
+# echo $config[@]
 
 identifiant=$config[identifiant]
 password=$config[password] # this should be provided via a config file so it's more secure

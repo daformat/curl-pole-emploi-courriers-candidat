@@ -7,12 +7,69 @@ export PATH=/usr/local/bin:$PATH
 
 
 # Parse arguments
-zparseopts -A ARGUMENTS -id: -pass: -zip: -imsg:
+zparseopts -A ARGUMENTS -id: -pass: -zip: -imsg: -conf
 
-identifiant=$ARGUMENTS[--id]
-password=$ARGUMENTS[--pass]
-zipcode=$ARGUMENTS[--zip]
-imessage_address=$ARGUMENTS[--imsg]
+config_file=$ARGUMENTS[--conf]
+
+if [ -z $config_file ]; then
+  config_file='./pe.conf'
+fi
+
+# echo "Configuration utilisée : "$config_file
+
+typeset -A config
+
+config=(
+  pdf_directory '.'
+  shut_up false
+)
+
+if [ -r $config_file ]
+then
+  while read line
+  do
+    if echo $line | grep -F = &>/dev/null
+    then
+      varname=$(echo "$line" | cut -d '=' -f 1)
+      config[$varname]=$(echo "$line" | cut -d '=' -f 2-)
+    fi
+  done < $config_file
+fi
+
+if [ ! -z $ARGUMENTS[--id] ]; then
+  config[identifiant]=$ARGUMENTS[--id]
+fi
+
+if [ ! -z $ARGUMENTS[--pass] ]; then
+  config[password]=$ARGUMENTS[--pass]
+fi
+
+if [ ! -z $ARGUMENTS[--zip] ]; then
+  config[zipcode]=$ARGUMENTS[--zip]
+fi
+
+if [ ! -z $ARGUMENTS[--pdf-dir] ]; then
+  config[pdf_directory]=$ARGUMENTS[--pdf-dir]
+fi
+
+if [ ! -z $ARGUMENTS[--imsg] ]; then
+  config[imessage_address]=$ARGUMENTS[--imsg]
+fi
+
+if [[ $* == *--shut-the-fuck-up* ]]; then
+  config[shut_up]=true
+fi
+
+# Expand relative paths
+config[pdf_directory]=$(cd $config[pdf_directory]; pwd)
+
+# echo $config[@]
+
+identifiant=$config[identifiant]
+password=$config[password] # this should be provided via a config file so it's more secure
+zipcode=$config[zipcode]
+pdf_directory=${config[pdf_directory]%/} # the ${var%/} notation is used to remove the eventual trailing slash
+imessage_address=$config[imessage_address]
 
 
 # Setup text colors
@@ -152,7 +209,7 @@ fi
 
 
 echo "\nAuthentification..."
-print -P "%BMot de passe :%b $password"
+print -P "%BMot de passe :%b " $(echo $password | sed -e 's/./•/g')
 print -P "%BCode postal :%b $zipcode"
 home_candidat=`curl -s -k -L -D - "https://candidat.pole-emploi.fr$formaction" --data-urlencode "t%3Aformdata=$formdata" --data "t%3Asubmit=%5B%22boutonValider%22%2C%22boutonValider%22%5D&champMotDePasse=$password&champTexteCodePostal=$zipcode&boutonValider=Se+connecter" --cookie cookies.txt --cookie-jar cookies.txt`
 
