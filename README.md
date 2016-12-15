@@ -30,9 +30,9 @@ Si vous n'avez pas crée de fichier de configuration (voir plus bas) ou bien si 
 - votre mot de passe.
 - votre code postal (ben ouais, va comprendre en quoi c'est impératif pour t'identifier sur le site web).
 
-Puis il téléchargera tous les PDFs **ayant été déposés dans les 30 derniers jours** qu'il trouvera sur votre compte pôle-emploi et qui ne sont pas déjà **dans le repertoire courant**.
+Puis il téléchargera tous les PDFs **ayant été déposés dans les 30 derniers jours** qu'il trouvera sur votre compte pôle-emploi et qui ne sont pas déjà **dans le repertoire courant (ou dans le répertoire spécifié dans le fichier de configuration)**.
 
-Enfin, il m'affichera dans le terminal le résumé de ce qui s'est passé.
+Enfin, il affichera dans le terminal le résumé de ce qui s'est passé.
 
 En bonus, pour ceux qui sont sous macOS, il va générer une notification système, potentiellement envoyer une notification iMessage vers le numéro de votre choix, et même dire à haute voix qu'il a récupéré de nouveaux messages.
 
@@ -50,7 +50,7 @@ Les options suivantes sont disponibles :
 
 Si l'une ou plusieurs des options `--id`, `--pass`, ou `--zip` est manquante le script demandera à l'utilisateur de les saisir avant de continuer.
 
-Si l'option `--pdf-dir` n'est pas spécifiée, le script téléchargera les nouveaux courriers dans le répertoire courant, sous réserve qu'il n'y soient pas déjà.
+Si l'option `--pdf-dir` n'est pas spécifiée et que le fichier de configuration ne précise pas le paramètre pdf_directory, le script téléchargera les nouveaux courriers dans le répertoire courant, sous réserve qu'il n'y soient pas déjà.
 
 Si l'un des paramètres fourni dans le fichier de configuration est aussi fourni sous forme d'option lors de l'invocation du script. Les options auront la priorité sur le fichier de configuration.
 
@@ -75,7 +75,7 @@ shut_up=true
 
 Pour des questions de sécurité, assurez vous que les permissions du fichier de configuration sont adaptées (0600 semble une bonne idée) et que seuls des utilisateurs de confiance y ait accès.
 
-**Remarque :** Pour le paramètre `pdf_directory`, ne pas utiliser le ~ pour désigner le répertoire de l'utilisateur courant. Sans quoi le script applescript utilisé pour attribuer une étiquette de couleur aux nouveau fichiers téléchargés ne fonctionnera pas, et un message d'erreur ressemblant à `165:235: execution error: Impossible de convertir POSIX file "/.:2016123456789.pdf" of application "Finder" en type alias. (-1700)` apparaitra dans la sortie du script pe-curl.sh.
+**Remarque :** Dans le fichier de configuration, pour le paramètre `pdf_directory`, ne pas utiliser le ~ pour désigner le répertoire de l'utilisateur courant (aucun problème pour en revanche pour l'utiliser dans le passage d'options avec `--pdf-dir`). Sans quoi le script applescript utilisé pour attribuer une étiquette de couleur aux nouveau fichiers téléchargés ne fonctionnera pas, et un message d'erreur ressemblant à `165:235: execution error: Impossible de convertir POSIX file "/.:2016123456789.pdf" of application "Finder" en type alias. (-1700)` apparaitra dans la sortie du script pe-curl.sh.
 
 ### Tâche Cron
 Le script peut tout à fait être utilisé pour une tâche Cron, c'est même le but !
