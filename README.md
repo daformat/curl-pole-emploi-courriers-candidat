@@ -42,7 +42,7 @@ En bonus, pour ceux qui sont sous macOS, il va générer une notification systè
 Les options suivantes sont disponibles :
 - `-- conf` _fichier-configuration_ - permet de préciser l'endroit ou se trouve votre fichier de configuration.
 - `--id` _identifiant_ - permet de spécifier votre identifiant pôle-emploi.
-- `--pass` _mot-de-passe_ - permet de spécifier votre mot de passe pôle-emploi. **Attention :** il n'est pas recommandé de passer votre mot de passe via les options du script. Pour des questions de sécurité, préférez l'utilisation d'un fichier de configuration (voir ci après).
+- `--pass` _mot-de-passe_ - permet de spécifier votre mot de passe pôle-emploi. **Attention : il n'est pas recommandé de passer votre mot de passe via les options du script. Pour des questions de sécurité, préférez l'utilisation d'un fichier de configuration (voir ci après).**
 - `--zip` _code-postal_ - permet de spécifier votre code postal.
 - `--pdf-dir` _repertoire-pdf_ - permet de spécifier le répertoire dans lequel chercher et stocker les PDF de pôle-emploi sur votre machine.
 - `--imsg` _telephone_ - permet de spécifier votre numéro de téléphone ou tout autre identifiant iMessage pour vous envoyer une notification lorsque de nouveaux courriers ont été téléchargés.
