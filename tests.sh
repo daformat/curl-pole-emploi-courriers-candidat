@@ -51,6 +51,9 @@ print_time() {
 
 # Configuration / options
 
+init_time=`date +%s`
+print -P "\n%B[0h:0m:0s]%b - Résolution de la configuration"
+
 # Parse arguments
 zparseopts -A ARGUMENTS -id: -pass: -zip: -imsg: -conf:
 
@@ -123,24 +126,37 @@ zipcode=$config[zipcode]
 pdf_directory=${config[pdf_directory]%/} # the ${var%/} notation is used to remove the eventual trailing slash
 imessage_address=$config[imessage_address]
 
-
+for k in "${(@k)config}"
+do
+  print -P -n "[$k] "
+  if [ $k = 'password' ]; then
+    print -P "'$(echo "${config[$k]}" | sed -e 's/./•/g')'"
+  else
+    print -P "'${config[$k]}'"
+  fi
+done
 # ---
 
 # Prompt for any missing required info
 
-# Ask for login info if they were not provided as arguments
-while [ -z $identifiant ]; do
-  print -P -n "%BIdentifiant Pôle-Emploi :%b "
-  read identifiant
-done
-while [ -z $password ]; do
-  print -P -n "%BMot de passe :%b "
-  read password
-done
-while [ -z $zipcode ]; do
-  print -P -n "%BCode postal :%b "
-  read zipcode
-done
+if [ -z $identifiant -o -z $password -o -z $zipcode ]
+then
+  echo "\nLa configuration fournie est incomplète, veuillez saisir les informations manquantes"
+  # Ask for login info if they were not provided as arguments
+  while [ -z $identifiant ]; do
+    print -P -n "%BIdentifiant Pôle-Emploi :%b "
+    read identifiant
+  done
+  while [ -z $password ]; do
+    print -P -n "%BMot de passe :%b "
+    read -s -r password
+    echo
+  done
+  while [ -z $zipcode ]; do
+    print -P -n "%BCode postal :%b "
+    read zipcode
+  done
+fi
 
 # ---
 
@@ -149,7 +165,9 @@ done
 # ---
 
 start_time=`date +%s`
-print -P "\n%B[0h:0m:0s]%b - Démarrage des tests"
+run_time=$((start_time-init_time))
+t=$(print_time $run_time)
+print -P "\n%B[$t]%b - Démarrage des tests"
 
 new_test_set "Vérifications préliminaires, démarrage de la session..."
 
@@ -412,10 +430,12 @@ done
 # Récap final
 
 end_time=`date +%s`
+time_since_init=$((end_time-init_time))
 run_time=$((end_time-start_time))
-t=$(print_time $run_time)
+t=$(print_time $time_since_init)
+t2=$(print_time $run_time)
 
-print -P "\n%B[$t]%b - Terminé"
+print -P "\n%B[$t]%b - Tests terminés en $t2"
 
 if [[ $erreurs -gt O ]]
 then
