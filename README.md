@@ -37,7 +37,7 @@ Enfin, il m'affichera dans le terminal le résumé de ce qui s'est passé.
 En bonus, pour ceux qui sont sous macOS, il va générer une notification système, potentiellement envoyer une notification iMessage vers le numéro de votre choix, et même dire à haute voix qu'il a récupéré de nouveaux messages.
 
 #### Avec paramètres
-`./pe-curl.sh [--conf fichier-configuration][--id identifiant] [--pass mot-de-passe] [--zip code-postal] [--pdf-dir repertoire-pdf] [--imsg telephone] [--shut-the-fuck-up]`
+`./pe-curl.sh [--conf fichier-configuration] [--id identifiant] [--pass mot-de-passe] [--zip code-postal] [--pdf-dir repertoire-pdf] [--imsg telephone] [--shut-the-fuck-up]`
 
 Les options suivantes sont disponibles :
 - `-- conf` _fichier-configuration_ - permet de préciser l'endroit ou se trouve votre fichier de configuration.
