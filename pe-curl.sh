@@ -121,8 +121,8 @@ echo "Récupération de la liste des courriers..."
 
 # we first get a page that is a javascript submited form, so we need to submit the form on our own, this adds a new cookie with the courrier session ID
 mes_courriers=`curl -s -k -L "https://candidat.pole-emploi.fr/candidat/espacepersonnel/regroupements/mesechangesavecpoleemploi.mes_courriers:debrancherversleservice" --cookie cookies.txt`
-action=`echo $mes_courriers | grep -oe "action=\".*\"/>" | cut -d'"' -f2`
-jeton=`echo $mes_courriers | grep -oe "value=\".*\"/>" | cut -d'"' -f2`
+action=`echo $mes_courriers | hxselect 'body>form' | grep -oe "action=\".*\"/>" | cut -d'"' -f2`
+jeton=`echo $mes_courriers | hxselect 'body>form' | grep -oe "value=\".*\"/>" | cut -d'"' -f2`
 
 # Ok, done, now grab the actual mail list page.
 courriers=`curl -s -k -L "$action" --data-urlencode "jeton=$jeton" --cookie cookies.txt --cookie-jar cookies.txt`

@@ -284,8 +284,9 @@ new_test_set "Vérification de la capacité à accéder au service courrier..."
 # we first get a page that is a javascript submited form, so we need to submit the form on our own, this adds a new cookie with the courrier session ID
 url="https://candidat.pole-emploi.fr/candidat/espacepersonnel/regroupements/mesechangesavecpoleemploi.mes_courriers:debrancherversleservice"
 mes_courriers=`curl -s -k -D - -L "$url" --cookie cookies.txt`
-action=`echo $mes_courriers | grep -oe "action=\".*\"/>" | cut -d'"' -f2`
-jeton=`echo $mes_courriers | grep -oe "value=\".*\"/>" | cut -d'"' -f2`
+#echo $mes_courriers
+action=`echo $mes_courriers | hxselect 'body>form' | grep -oe "action=\".*\"/>" | cut -d'"' -f2`
+jeton=`echo $mes_courriers | hxselect 'body>form' | grep -oe "value=\".*\"/>" | cut -d'"' -f2`
 
 
 # Vérifions qu'on obtient bien un code 200
@@ -309,13 +310,14 @@ fi
 # Vérifions que nous avons bien une action
 if [ -z $action ]
 then
-  fail "Impossible de trouver une action le formulaire de courrier"
+  fail "Impossible de trouver une action pour le formulaire de courrier"
 else
   succeed "Action trouvée ($action)"
 fi
 
 # Vérifions que l'action est bien l'action habituelle
-if [ ! $action = 'https://courriers.pole-emploi.fr/courriersweb/acces/AccesCourriers' ]
+
+if [ ! $action = 'https://courriers.pole-emploi.fr/courriersweb/acces/AccesCourriers' -o -z $action ]
 then
   fail "L'action ne correspond pas à l'action attendue"
 else
@@ -339,7 +341,8 @@ new_test_set "Récupération de la liste de courriers récents..."
 courriers=`curl -s -k -D - -L "$action" --data-urlencode "jeton=$jeton" --cookie cookies.txt --cookie-jar cookies.txt`
 
 # Vérifions qu'on obtient bien un code 200
-courriers_http_status=`echo $mes_courriers | grep -o 'HTTP/1.1 200 OK'`
+courriers_http_status=`echo $courriers | grep -o 'HTTP/1.1 200 OK'`
+
 if [ -z $courriers_http_status ]
 then
   fail "Code HTTP inattendu"
