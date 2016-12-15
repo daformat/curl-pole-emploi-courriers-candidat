@@ -206,7 +206,7 @@ then
   then
     # Trigger a notification
     osascript -e "display notification \"$nouveaux_courriers_telecharges $texte\" with title \"Pôle emploi\" sound name \"Pop\""
-    if [ ! -z $imessage_address ]
+    if [ ! -z $imessage_address ] && [ ! $imessage_address=false ]
     then
       # We can then send an iMessage...
       osascript<<END

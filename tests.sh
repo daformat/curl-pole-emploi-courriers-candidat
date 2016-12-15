@@ -392,7 +392,7 @@ then
   print -P "${BOLD_RED}Nombre d'erreurs détéctées : $erreurs${RESET}"
   if hash osascript 2>/dev/null;
   then
-    if [ ! -z $imessage_address ]
+    if [ ! -z $imessage_address ] && [ ! $imessage_address=false ]
     then
       # On balance un iMessage si ça a été demandé...
       osascript<<END
