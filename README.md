@@ -17,7 +17,7 @@ Donc j'ai fini par faire un script qui à ce jour (14/12/2016) fonctionne très 
 - Zsh.
 - [Curl](https://curl.haxx.se).
 - [oh my zsh](http://ohmyz.sh/) - sans doutes pas impératif, mais il est possible que le script se plaigne de quelque chose si vous ne l'utilisez pas. De toutes façons, vous devriez, voilà, point-barre.
-- html-xml-utils (sous macOS avec homebrew : `brew install html-xml-utils`, sous Debian ou Ubuntu `sudo apt-get install html-xml-utils`)
+- [html-xml-utils](https://www.w3.org/Tools/HTML-XML-utils/) (sous macOS avec homebrew : `brew install html-xml-utils`, sous Debian ou Ubuntu `sudo apt-get install html-xml-utils`)
 
 ### Utilisation
 Le script peut-être utilisé de deux manières différentes :
